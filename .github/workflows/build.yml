@@ -1,4 +1,4 @@
-name: Build Wanbo Remote Stage 3 Fixed
+name: Build Wanbo Remote Stage 3 Input Fixed
 
 on:
   workflow_dispatch:
@@ -16,7 +16,7 @@ jobs:
 
       - name: Extract Android project
         run: |
-          unzip -q WanboRemote_Stage3_Fixed.zip -d project
+          unzip -q WanboRemote_Stage3_InputFixed.zip -d project
           ls -la project
 
       - name: Set up Java 17
@@ -37,5 +37,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage3-Fixed-APK
+          name: WanboRemote-Stage3-InputFixed-APK
           path: project/app/build/outputs/apk/debug/app-debug.apk
