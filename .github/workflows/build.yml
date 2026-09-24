@@ -16,7 +16,7 @@ jobs:
 
       - name: Extract Android project
         run: |
-          unzip -q WanboRemote_Stage5_LayoutFix6.zip -d project
+          unzip -q WanboRemote_Stage5_LayoutFix7.zip -d project
           echo "Building from:"
           pwd
           find project -maxdepth 2 -type f | sort | head -50
