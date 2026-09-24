@@ -19,10 +19,13 @@ jobs:
           unzip -q WanboRemote_Test1.zip -d project
           ls -la project
 
-      - name: Fix Java and Kotlin versions
+      - name: Fix Kotlin JVM target
         run: |
-          sed -i 's/JavaVersion.VERSION_1_8/JavaVersion.VERSION_17/g' project/app/build.gradle.kts
-          grep -n "JavaVersion" project/app/build.gradle.kts || true
+          sed -i '/compileSdk = 35/a\
+              kotlinOptions {\
+                  jvmTarget = "1.8"\
+              }' project/app/build.gradle.kts
+          cat project/app/build.gradle.kts
 
       - name: Set up Java 17
         uses: actions/setup-java@v5
