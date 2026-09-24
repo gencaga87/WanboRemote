@@ -19,7 +19,7 @@ jobs:
           rm -rf project
           mkdir project
 
-          unzip -q WanboRemote_Stage5_Design.zip -d project
+          unzip -q WanboRemote_Stage5_Design_Fixed.zip -d project
 
           echo "=== ZIP CONTENT ==="
           find project -maxdepth 4 -type f | sort
