@@ -1,4 +1,4 @@
-name: Build Wanbo Remote Stage 4 Status Fixed
+name: Build Wanbo Remote Stage 4
 
 on:
   workflow_dispatch:
@@ -16,9 +16,8 @@ jobs:
 
       - name: Extract Android project
         run: |
-          unzip -q WanboRemote_Stage4_UI_StatusFixed.zip -d project
-          echo "Project structure:"
-          find project -maxdepth 2 -type f | sort
+          unzip -q WanboRemote_Stage4_UI_StatusFixed2.zip -d project
+          ls -la project
 
       - name: Set up Java 17
         uses: actions/setup-java@v5
@@ -38,5 +37,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage4-StatusFixed-APK
+          name: WanboRemote-Stage4-UI-StatusFixed2-APK
           path: project/wanbo_stage4/app/build/outputs/apk/debug/app-debug.apk
