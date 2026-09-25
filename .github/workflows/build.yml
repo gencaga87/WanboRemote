@@ -1,4 +1,4 @@
-name: Build Wanbo Remote Stage 14 Header Band Clean Fix 25
+name: Build Wanbo Remote Stage 14 Header Background Fix
 
 on:
   workflow_dispatch:
@@ -12,51 +12,68 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Extract Android project
         run: |
           rm -rf project
           mkdir -p project
-          unzip -q WanboRemote_Stage14_HeaderBandCleanFix25.zip -d project
+          unzip -q WanboRemote_Stage14_HeaderBackgroundFix.zip -d project
 
           echo "=== EXTRACTED PROJECT ==="
-          find project -maxdepth 2 -type f | sort
+          find project -maxdepth 3 -type f | sort
 
       - name: Set up Java 17
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.10.2'
 
-      - name: Check Gradle project
-        working-directory: project
+      - name: Find Gradle project
+        id: gradle_project
+        shell: bash
         run: |
-          echo "=== GRADLE PROJECT ==="
-          pwd
+          SETTINGS=$(find project -type f \( -name "settings.gradle" -o -name "settings.gradle.kts" \) | head -n 1)
 
-          echo "=== PROJECT FILES ==="
-          ls -la
+          if [ -z "$SETTINGS" ]; then
+            echo "ERROR: settings.gradle veya settings.gradle.kts bulunamadı."
+            find project -maxdepth 5 -type f | sort
+            exit 1
+          fi
 
-          echo "=== APP ==="
-          ls -la app
+          GRADLE_DIR=$(dirname "$SETTINGS")
+
+          echo "Gradle project: $GRADLE_DIR"
+          echo "gradle_dir=$GRADLE_DIR" >> "$GITHUB_OUTPUT"
 
       - name: Build APK
-        working-directory: project
+        working-directory: ${{ steps.gradle_project.outputs.gradle_dir }}
         run: |
           gradle assembleDebug --stacktrace
 
-      - name: Check APK
+      - name: Find APK
+        id: apk
+        shell: bash
         run: |
-          ls -lh project/app/build/outputs/apk/debug/app-debug.apk
+          APK=$(find project -type f -path "*/build/outputs/apk/debug/*.apk" | head -n 1)
+
+          if [ -z "$APK" ]; then
+            echo "ERROR: APK bulunamadı."
+            find project -type f | sort
+            exit 1
+          fi
+
+          echo "APK bulundu: $APK"
+          echo "apk_path=$APK" >> "$GITHUB_OUTPUT"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage14-HeaderBandCleanFix25-APK
-          path: project/app/build/outputs/apk/debug/app-debug.apk
+          name: WanboRemote-Stage14-HeaderBackgroundFix-APK
+          path: ${{ steps.apk.outputs.apk_path }}
+          if-no-files-found: error
