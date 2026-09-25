@@ -1,4 +1,4 @@
-name: Build Wanbo Remote Stage 14 Header Background Fix
+name: Build Wanbo Remote Stage 15 Header And Search Fix 26
 
 on:
   workflow_dispatch:
@@ -18,10 +18,11 @@ jobs:
         run: |
           rm -rf project
           mkdir -p project
-          unzip -q WanboRemote_Stage14_HeaderBackgroundFix.zip -d project
 
-          echo "=== EXTRACTED PROJECT ==="
-          find project -maxdepth 3 -type f | sort
+          unzip -q WanboRemote_Stage15_HeaderAndSearchFix26.zip -d project
+
+          echo "=== EXTRACTED FILES ==="
+          find project -maxdepth 5 -type f | sort
 
       - name: Set up Java 17
         uses: actions/setup-java@v4
@@ -38,18 +39,34 @@ jobs:
         id: gradle_project
         shell: bash
         run: |
-          SETTINGS=$(find project -type f \( -name "settings.gradle" -o -name "settings.gradle.kts" \) | head -n 1)
+          SETTINGS=$(find project -type f \
+            \( -name "settings.gradle" -o -name "settings.gradle.kts" \) \
+            | head -n 1)
 
           if [ -z "$SETTINGS" ]; then
             echo "ERROR: settings.gradle veya settings.gradle.kts bulunamadı."
-            find project -maxdepth 5 -type f | sort
+            echo ""
+            echo "=== PROJECT FILES ==="
+            find project -maxdepth 6 -type f | sort
             exit 1
           fi
 
           GRADLE_DIR=$(dirname "$SETTINGS")
 
-          echo "Gradle project: $GRADLE_DIR"
+          echo "Gradle project bulundu:"
+          echo "$GRADLE_DIR"
+
           echo "gradle_dir=$GRADLE_DIR" >> "$GITHUB_OUTPUT"
+
+      - name: Check Gradle project
+        working-directory: ${{ steps.gradle_project.outputs.gradle_dir }}
+        run: |
+          echo "=== GRADLE PROJECT ==="
+          pwd
+
+          echo ""
+          echo "=== PROJECT FILES ==="
+          find . -maxdepth 3 -type f | sort
 
       - name: Build APK
         working-directory: ${{ steps.gradle_project.outputs.gradle_dir }}
@@ -60,20 +77,28 @@ jobs:
         id: apk
         shell: bash
         run: |
-          APK=$(find project -type f -path "*/build/outputs/apk/debug/*.apk" | head -n 1)
+          APK=$(find project -type f \
+            -path "*/build/outputs/apk/debug/*.apk" \
+            | head -n 1)
 
           if [ -z "$APK" ]; then
-            echo "ERROR: APK bulunamadı."
+            echo "ERROR: Debug APK bulunamadı."
+
+            echo ""
+            echo "=== BUILD OUTPUTS ==="
             find project -type f | sort
+
             exit 1
           fi
 
-          echo "APK bulundu: $APK"
+          echo "APK bulundu:"
+          echo "$APK"
+
           echo "apk_path=$APK" >> "$GITHUB_OUTPUT"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage14-HeaderBackgroundFix-APK
+          name: WanboRemote-Stage15-HeaderAndSearchFix26-APK
           path: ${{ steps.apk.outputs.apk_path }}
           if-no-files-found: error
