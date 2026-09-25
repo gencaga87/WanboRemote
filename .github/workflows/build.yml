@@ -1,4 +1,4 @@
-name: Build Wanbo Remote Stage 5 Pairing Port Fix
+name: Build Wanbo Remote Stage 5 Remote Handshake Fix 15
 
 on:
   workflow_dispatch:
@@ -18,7 +18,7 @@ jobs:
         run: |
           rm -rf project
           mkdir -p project
-          unzip -q WanboRemote_Stage5_PairingFix14.zip -d project
+          unzip -q WanboRemote_Stage5_RemoteHandshakeFix15.zip -d project
           echo "Project contents:"
           ls -la project
 
@@ -45,5 +45,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage5-PairingFix14-APK
+          name: WanboRemote-Stage5-RemoteHandshakeFix15-APK
           path: project/app/build/outputs/apk/debug/app-debug.apk
