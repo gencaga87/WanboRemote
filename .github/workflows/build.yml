@@ -18,7 +18,7 @@ jobs:
         run: |
           rm -rf project
           mkdir -p project
-          unzip -q WanboRemote_Stage10_ScanSpinnerFix20.zip -d project
+          unzip -q WanboRemote_Stage10_ScanSpinnerFix21.zip -d project
 
           echo "=== PROJECT FILES ==="
           find project -maxdepth 3 -type f | sort
@@ -62,5 +62,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage10-ScanSpinnerFix20-APK
+          name: WanboRemote-Stage10-ScanSpinnerFix21-APK
           path: project/app/build/outputs/apk/debug/app-debug.apk
