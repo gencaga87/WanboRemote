@@ -1,4 +1,4 @@
-name: Build Wanbo Remote Stage 9 Search UX Fix 19
+name: Build Wanbo Remote Stage 10 Scan Spinner Fix 20
 
 on:
   workflow_dispatch:
@@ -18,10 +18,10 @@ jobs:
         run: |
           rm -rf project
           mkdir -p project
-          unzip -q WanboRemote_Stage9_SearchUXFix19.zip -d project
+          unzip -q WanboRemote_Stage10_ScanSpinnerFix20.zip -d project
 
-          echo "Project files:"
-          ls -la project
+          echo "=== PROJECT FILES ==="
+          find project -maxdepth 3 -type f | sort
 
       - name: Set up Java 17
         uses: actions/setup-java@v5
@@ -34,16 +34,20 @@ jobs:
         with:
           gradle-version: '8.10.2'
 
-      - name: Check Gradle project
+      - name: Check Android project
         working-directory: project
         run: |
-          echo "Gradle project:"
+          echo "=== GRADLE PROJECT ==="
           pwd
+          echo ""
+          echo "=== ROOT FILES ==="
           ls -la
-          echo "Settings:"
-          ls -lh settings.gradle.kts
-          echo "App:"
+          echo ""
+          echo "=== APP DIRECTORY ==="
           ls -la app
+          echo ""
+          echo "=== SETTINGS ==="
+          cat settings.gradle.kts
 
       - name: Build APK
         working-directory: project
@@ -52,10 +56,11 @@ jobs:
 
       - name: Check APK
         run: |
+          echo "=== APK ==="
           ls -lh project/app/build/outputs/apk/debug/app-debug.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage9-SearchUXFix19-APK
+          name: WanboRemote-Stage10-ScanSpinnerFix20-APK
           path: project/app/build/outputs/apk/debug/app-debug.apk
