@@ -1,4 +1,4 @@
-name: Build Wanbo Remote Stage 10 Scan Spinner Fix 20
+name: Build Wanbo Remote Stage 11 PIN Dialog and Spinner Fix 22
 
 on:
   workflow_dispatch:
@@ -18,10 +18,9 @@ jobs:
         run: |
           rm -rf project
           mkdir -p project
-          unzip -q WanboRemote_Stage10_ScanSpinnerFix21.zip -d project
-
-          echo "=== PROJECT FILES ==="
-          find project -maxdepth 3 -type f | sort
+          unzip -q WanboRemote_Stage11_PINDialog_SpinnerSizeFix22.zip -d project
+          echo "Project contents:"
+          ls -la project
 
       - name: Set up Java 17
         uses: actions/setup-java@v5
@@ -34,21 +33,6 @@ jobs:
         with:
           gradle-version: '8.10.2'
 
-      - name: Check Android project
-        working-directory: project
-        run: |
-          echo "=== GRADLE PROJECT ==="
-          pwd
-          echo ""
-          echo "=== ROOT FILES ==="
-          ls -la
-          echo ""
-          echo "=== APP DIRECTORY ==="
-          ls -la app
-          echo ""
-          echo "=== SETTINGS ==="
-          cat settings.gradle.kts
-
       - name: Build APK
         working-directory: project
         run: |
@@ -56,11 +40,10 @@ jobs:
 
       - name: Check APK
         run: |
-          echo "=== APK ==="
           ls -lh project/app/build/outputs/apk/debug/app-debug.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage10-ScanSpinnerFix21-APK
+          name: WanboRemote-Stage11-PINDialog-SpinnerSizeFix22-APK
           path: project/app/build/outputs/apk/debug/app-debug.apk
