@@ -16,7 +16,7 @@ jobs:
 
       - name: Extract Android project
         run: |
-          unzip -q WanboRemote_Stage5_LayoutFix7.zip -d project
+          unzip -q WanboRemote_Stage5_LayoutFix8.zip -d project
           echo "Building from:"
           pwd
           find project -maxdepth 2 -type f | sort | head -50
@@ -39,5 +39,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage5-LayoutFix6-APK
+          name: WanboRemote-Stage5-LayoutFix8-APK
           path: project/wanbo_stage5/app/build/outputs/apk/debug/app-debug.apk
