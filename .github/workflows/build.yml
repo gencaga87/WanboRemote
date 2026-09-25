@@ -1,4 +1,4 @@
-name: Build Wanbo Remote Stage 5 UI Pairing Restored
+name: Build Wanbo Remote Stage 5 Pairing Fix 13
 
 on:
   workflow_dispatch:
@@ -18,8 +18,9 @@ jobs:
         run: |
           rm -rf project
           mkdir -p project
-          unzip -q WanboRemote_Stage5_UI_PairingRestored.zip -d project
+          unzip -q WanboRemote_Stage5_PairingFix13.zip -d project
           ls -la project
+          find project -maxdepth 3 -type f | head -50
 
       - name: Set up Java 17
         uses: actions/setup-java@v5
@@ -39,5 +40,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage5-UI-PairingRestored-APK
+          name: WanboRemote-Stage5-PairingFix13-APK
           path: project/app/build/outputs/apk/debug/app-debug.apk
