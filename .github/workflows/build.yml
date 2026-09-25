@@ -1,4 +1,4 @@
-name: Build Wanbo Remote Stage 6 Device List UI Fix 16
+name: Build Wanbo Remote Stage 7 Live Device UI Fix 17
 
 on:
   workflow_dispatch:
@@ -18,7 +18,7 @@ jobs:
         run: |
           rm -rf project
           mkdir -p project
-          unzip -q WanboRemote_Stage6_DeviceListUIFix16.zip -d project
+          unzip -q WanboRemote_Stage7_LiveDeviceUIFix17.zip -d project
           echo "Project contents:"
           ls -la project
 
@@ -45,5 +45,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage6-DeviceListUIFix16-APK
+          name: WanboRemote-Stage7-LiveDeviceUIFix17-APK
           path: project/app/build/outputs/apk/debug/app-debug.apk
