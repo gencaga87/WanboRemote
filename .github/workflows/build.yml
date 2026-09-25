@@ -1,4 +1,4 @@
-name: Build Wanbo Remote Stage 8 Wi-Fi Style Search Fix 18
+name: Build Wanbo Remote Stage 9 Search UX Fix 19
 
 on:
   workflow_dispatch:
@@ -18,7 +18,7 @@ jobs:
         run: |
           rm -rf project
           mkdir -p project
-          unzip -q WanboRemote_Stage8_WifiStyleSearchFix18.zip -d project
+          unzip -q WanboRemote_Stage9_SearchUXFix19.zip -d project
           echo "Extracted project:"
           find project -maxdepth 2 -type f | sort
 
@@ -34,7 +34,7 @@ jobs:
           gradle-version: '8.10.2'
 
       - name: Check Gradle project
-        working-directory: project/fix18
+        working-directory: project/fix19
         run: |
           echo "Gradle project:"
           pwd
@@ -43,16 +43,16 @@ jobs:
           ls -la app
 
       - name: Build APK
-        working-directory: project/fix18
+        working-directory: project/fix19
         run: |
           gradle assembleDebug --stacktrace
 
       - name: Check APK
         run: |
-          ls -lh project/fix18/app/build/outputs/apk/debug/app-debug.apk
+          ls -lh project/fix19/app/build/outputs/apk/debug/app-debug.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage8-WifiStyleSearchFix18-APK
-          path: project/fix18/app/build/outputs/apk/debug/app-debug.apk
+          name: WanboRemote-Stage9-SearchUXFix19-APK
+          path: project/fix19/app/build/outputs/apk/debug/app-debug.apk
