@@ -1,4 +1,4 @@
-name: Build Wanbo Remote Stage 16 Paired Button Circle Fix 27
+name: Build Wanbo Remote Stage 17 Button Feedback Haptic Fix 28
 
 on:
   workflow_dispatch:
@@ -19,7 +19,7 @@ jobs:
           rm -rf project
           mkdir -p project
 
-          unzip -q WanboRemote_Stage16_PairedButtonCircleFix27.zip -d project
+          unzip -q WanboRemote_Stage17_ButtonFeedbackHapticFix28.zip -d project
 
           echo "=== PROJECT ROOT ==="
           ls -la project
@@ -52,12 +52,8 @@ jobs:
           cat settings.gradle.kts
 
           echo ""
-          echo "=== BUILD FILE ==="
-          cat build.gradle.kts
-
-          echo ""
           echo "=== APP FILES ==="
-          find app -maxdepth 3 -type f | sort
+          find app -maxdepth 4 -type f | sort
 
       - name: Build APK
         working-directory: project
@@ -74,11 +70,7 @@ jobs:
 
           if [ -z "$APK" ]; then
             echo "ERROR: APK bulunamadı."
-
-            echo ""
-            echo "=== ALL BUILD FILES ==="
             find project -type f | sort
-
             exit 1
           fi
 
@@ -90,6 +82,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage16-PairedButtonCircleFix27-APK
+          name: WanboRemote-Stage17-ButtonFeedbackHapticFix28-APK
           path: ${{ steps.apk.outputs.apk_path }}
           if-no-files-found: error
