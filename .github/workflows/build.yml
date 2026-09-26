@@ -1,4 +1,4 @@
-name: Build Wanbo Remote Stage 17 Button Feedback Haptic Fix 28
+name: Build Wanbo Remote Stage 17 Paired Button Ring Fix 33
 
 on:
   workflow_dispatch:
@@ -12,76 +12,36 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Extract Android project
         run: |
           rm -rf project
           mkdir -p project
-
-          unzip -q WanboRemote_Stage17_ButtonFeedbackHapticFix32.zip -d project
-
-          echo "=== PROJECT ROOT ==="
-          ls -la project
-
-          echo ""
-          echo "=== GRADLE FILES ==="
-          find project -maxdepth 2 -type f \
-            \( -name "settings.gradle*" -o -name "build.gradle*" -o -name "gradle.properties" \) \
-            -print
+          unzip -q WanboRemote_Stage17_PairedButtonRingFix33.zip -d project
 
       - name: Set up Java 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
         with:
           gradle-version: '8.10.2'
-
-      - name: Check Gradle project
-        working-directory: project
-        run: |
-          echo "=== GRADLE PROJECT ==="
-          pwd
-
-          echo ""
-          echo "=== SETTINGS ==="
-          cat settings.gradle.kts
-
-          echo ""
-          echo "=== APP FILES ==="
-          find app -maxdepth 4 -type f | sort
 
       - name: Build APK
         working-directory: project
         run: |
           gradle assembleDebug --stacktrace
 
-      - name: Find APK
-        id: apk
-        shell: bash
+      - name: Check APK
         run: |
-          APK=$(find project -type f \
-            -path "*/build/outputs/apk/debug/*.apk" \
-            | head -n 1)
-
-          if [ -z "$APK" ]; then
-            echo "ERROR: APK bulunamadı."
-            find project -type f | sort
-            exit 1
-          fi
-
-          echo "APK bulundu:"
-          echo "$APK"
-
-          echo "apk_path=$APK" >> "$GITHUB_OUTPUT"
+          ls -lh project/app/build/outputs/apk/debug/app-debug.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage17-ButtonFeedbackHapticFix32-APK
-          path: ${{ steps.apk.outputs.apk_path }}
-          if-no-files-found: error
+          name: WanboRemote-Stage17-PairedButtonRingFix33-APK
+          path: project/app/build/outputs/apk/debug/app-debug.apk
