@@ -1,4 +1,4 @@
-name: Build Wanbo Remote Stage 15 Header And Search Fix 26
+name: Build Wanbo Remote Stage 16 Paired Button Circle Fix 27
 
 on:
   workflow_dispatch:
@@ -19,10 +19,16 @@ jobs:
           rm -rf project
           mkdir -p project
 
-          unzip -q WanboRemote_Stage15_HeaderAndSearchFix26.zip -d project
+          unzip -q WanboRemote_Stage16_PairedButtonCircleFix27.zip -d project
 
-          echo "=== EXTRACTED FILES ==="
-          find project -maxdepth 5 -type f | sort
+          echo "=== PROJECT ROOT ==="
+          ls -la project
+
+          echo ""
+          echo "=== GRADLE FILES ==="
+          find project -maxdepth 2 -type f \
+            \( -name "settings.gradle*" -o -name "build.gradle*" -o -name "gradle.properties" \) \
+            -print
 
       - name: Set up Java 17
         uses: actions/setup-java@v4
@@ -35,41 +41,26 @@ jobs:
         with:
           gradle-version: '8.10.2'
 
-      - name: Find Gradle project
-        id: gradle_project
-        shell: bash
-        run: |
-          SETTINGS=$(find project -type f \
-            \( -name "settings.gradle" -o -name "settings.gradle.kts" \) \
-            | head -n 1)
-
-          if [ -z "$SETTINGS" ]; then
-            echo "ERROR: settings.gradle veya settings.gradle.kts bulunamadı."
-            echo ""
-            echo "=== PROJECT FILES ==="
-            find project -maxdepth 6 -type f | sort
-            exit 1
-          fi
-
-          GRADLE_DIR=$(dirname "$SETTINGS")
-
-          echo "Gradle project bulundu:"
-          echo "$GRADLE_DIR"
-
-          echo "gradle_dir=$GRADLE_DIR" >> "$GITHUB_OUTPUT"
-
       - name: Check Gradle project
-        working-directory: ${{ steps.gradle_project.outputs.gradle_dir }}
+        working-directory: project
         run: |
           echo "=== GRADLE PROJECT ==="
           pwd
 
           echo ""
-          echo "=== PROJECT FILES ==="
-          find . -maxdepth 3 -type f | sort
+          echo "=== SETTINGS ==="
+          cat settings.gradle.kts
+
+          echo ""
+          echo "=== BUILD FILE ==="
+          cat build.gradle.kts
+
+          echo ""
+          echo "=== APP FILES ==="
+          find app -maxdepth 3 -type f | sort
 
       - name: Build APK
-        working-directory: ${{ steps.gradle_project.outputs.gradle_dir }}
+        working-directory: project
         run: |
           gradle assembleDebug --stacktrace
 
@@ -82,10 +73,10 @@ jobs:
             | head -n 1)
 
           if [ -z "$APK" ]; then
-            echo "ERROR: Debug APK bulunamadı."
+            echo "ERROR: APK bulunamadı."
 
             echo ""
-            echo "=== BUILD OUTPUTS ==="
+            echo "=== ALL BUILD FILES ==="
             find project -type f | sort
 
             exit 1
@@ -99,6 +90,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage15-HeaderAndSearchFix26-APK
+          name: WanboRemote-Stage16-PairedButtonCircleFix27-APK
           path: ${{ steps.apk.outputs.apk_path }}
           if-no-files-found: error
