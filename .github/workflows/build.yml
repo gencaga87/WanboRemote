@@ -19,7 +19,7 @@ jobs:
           rm -rf project
           mkdir -p project
 
-          unzip -q WanboRemote_Stage17_ButtonFeedbackHapticFix31.zip -d project
+          unzip -q WanboRemote_Stage17_ButtonFeedbackHapticFix32.zip -d project
 
           echo "=== PROJECT ROOT ==="
           ls -la project
@@ -82,6 +82,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage17-ButtonFeedbackHapticFix31-APK
+          name: WanboRemote-Stage17-ButtonFeedbackHapticFix32-APK
           path: ${{ steps.apk.outputs.apk_path }}
           if-no-files-found: error
