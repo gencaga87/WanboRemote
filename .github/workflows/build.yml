@@ -1,4 +1,4 @@
-name: Build Wanbo Remote Stage 30 Back Home Touch Fix 49
+name: Build Wanbo Remote Stage 31 Back Home Touch Fine Fix 50
 
 on:
   workflow_dispatch:
@@ -18,7 +18,7 @@ jobs:
         run: |
           rm -rf project
           mkdir -p project
-          unzip -q WanboRemote_Stage30_BackHomeTouchFix49.zip -d project
+          unzip -q WanboRemote_Stage31_BackHomeTouchFineFix50.zip -d project
 
           echo "=== PROJECT ==="
           ls -la project
@@ -89,6 +89,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage30-BackHomeTouchFix49-APK
+          name: WanboRemote-Stage31-BackHomeTouchFineFix50-APK
           path: project/**/build/outputs/apk/debug/*.apk
           if-no-files-found: error
