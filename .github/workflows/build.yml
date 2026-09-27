@@ -1,4 +1,4 @@
-name: Build Wanbo Remote Stage 23 Netflix Key Test 41
+name: Build Wanbo Remote Stage 24 Netflix Host Fix 42
 
 on:
   workflow_dispatch:
@@ -19,7 +19,7 @@ jobs:
           rm -rf project
           mkdir -p project
 
-          unzip -q WanboRemote_Stage23_NetflixKeyTest41.zip -d project
+          unzip -q WanboRemote_Stage24_NetflixHostFix42.zip -d project
 
           echo "=== PROJECT ==="
           ls -la project
@@ -81,6 +81,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage23-NetflixKeyTest41-APK
+          name: WanboRemote-Stage24-NetflixHostFix42-APK
           path: ${{ steps.apk.outputs.apk_path }}
           if-no-files-found: error
