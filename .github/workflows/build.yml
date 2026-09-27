@@ -1,4 +1,4 @@
-name: Build Wanbo Remote Stage 30 Native Scanner
+name: Build Wanbo Remote Stage 30 Native Scanner Fix1
 
 on:
   workflow_dispatch:
@@ -39,22 +39,21 @@ jobs:
 
           ZIP=""
 
-          if [ -f "WanboRemote_Stage30_NativeScanner.zip" ]; then
-            ZIP="WanboRemote_Stage30_NativeScanner.zip"
+          if [ -f "WanboRemote_Stage30_NativeScanner_Fix1.zip" ]; then
+            ZIP="WanboRemote_Stage30_NativeScanner_Fix1.zip"
           else
             ZIP=$(find . -maxdepth 3 -type f \
-              -name 'WanboRemote_Stage30_*.zip' \
+              -name 'WanboRemote_Stage30_NativeScanner_Fix1.zip' \
               -print -quit || true)
           fi
 
           if [ -z "$ZIP" ]; then
-            echo "ERROR: Gradle projesi veya Stage30 ZIP bulunamadı."
-            echo "Repository içeriği:"
+            echo "ERROR: Stage30 Fix1 ZIP bulunamadı."
             find . -maxdepth 5 -type f | sort
             exit 1
           fi
 
-          echo "Kullanılan ZIP: $ZIP"
+          echo "ZIP: $ZIP"
 
           rm -rf build_project
           mkdir -p build_project
@@ -67,8 +66,7 @@ jobs:
             -print -quit)
 
           if [ -z "$PROJECT_FILE" ]; then
-            echo "ERROR: ZIP içinde settings.gradle(.kts) bulunamadı."
-            echo "ZIP içeriği:"
+            echo "ERROR: ZIP içinde Gradle projesi bulunamadı."
             find build_project -maxdepth 8 -type f | sort
             exit 1
           fi
@@ -87,12 +85,7 @@ jobs:
           test -f settings.gradle.kts -o -f settings.gradle
           test -f app/build.gradle.kts -o -f app/build.gradle
 
-          echo "Gradle projesi bulundu."
-          echo "settings:"
-          ls -l settings.gradle* 2>/dev/null || true
-
-          echo "app:"
-          ls -l app
+          echo "Gradle projesi OK."
 
       - name: Build Debug APK
         working-directory: ${{ steps.project.outputs.project_dir }}
@@ -112,19 +105,14 @@ jobs:
 
           APK="app/build/outputs/apk/debug/app-debug.apk"
 
-          if [ ! -f "$APK" ]; then
-            echo "ERROR: APK bulunamadı."
-            echo "APK dosyaları:"
-            find app/build -type f -name '*.apk' -print 2>/dev/null || true
-            exit 1
-          fi
+          test -f "$APK"
 
-          echo "APK başarıyla oluşturuldu:"
+          echo "APK oluşturuldu:"
           ls -lh "$APK"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage30-NativeScanner-APK
+          name: WanboRemote-Stage30-NativeScanner-Fix1-APK
           path: ${{ steps.project.outputs.project_dir }}/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
