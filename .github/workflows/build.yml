@@ -1,4 +1,4 @@
-name: Build Wanbo Remote Stage 35 Input Source Menu Fix 54
+name: Build Wanbo Remote Stage 36 HDMI2 Direct Fix 55
 
 on:
   workflow_dispatch:
@@ -18,7 +18,7 @@ jobs:
         run: |
           rm -rf project
           mkdir -p project
-          unzip -q WanboRemote_Stage35_InputSourceMenuFix54.zip -d project
+          unzip -q WanboRemote_Stage36_HDMI2DirectFix55.zip -d project
           ls -la project
 
       - name: Set up Java 17
@@ -54,13 +54,17 @@ jobs:
           gradle assembleDebug --stacktrace
 
       - name: Find APK
+        shell: bash
         run: |
+          echo "APK:"
           find "$GITHUB_WORKSPACE/project" \
-            -type f -path "*/build/outputs/apk/debug/*.apk" -print
+            -type f \
+            -path "*/build/outputs/apk/debug/*.apk" \
+            -print
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage35-InputSourceMenuFix54-APK
+          name: WanboRemote-Stage36-HDMI2DirectFix55-APK
           path: project/**/build/outputs/apk/debug/*.apk
           if-no-files-found: error
