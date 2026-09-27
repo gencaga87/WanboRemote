@@ -1,4 +1,4 @@
-name: Build Wanbo Remote Stage 34 Bluetooth Service Probe
+name: Build Wanbo Remote Stage 35 Bluetooth Protocol Logger
 
 on:
   workflow_dispatch:
@@ -38,31 +38,26 @@ jobs:
           fi
 
           ZIP=""
-
-          if [ -f "WanboRemote_Stage34_BluetoothServiceProbe.zip" ]; then
-            ZIP="WanboRemote_Stage34_BluetoothServiceProbe.zip"
+          if [ -f "WanboRemote_Stage35_BluetoothProtocolLogger.zip" ]; then
+            ZIP="WanboRemote_Stage35_BluetoothProtocolLogger.zip"
           else
-            ZIP=$(find . -maxdepth 3 -type f \
-              -name 'WanboRemote_Stage34_*.zip' \
-              -print -quit || true)
+            ZIP=$(find . -maxdepth 3 -type f -name 'WanboRemote_Stage35_*.zip' -print -quit || true)
           fi
 
           if [ -z "$ZIP" ]; then
-            echo "ERROR: Stage34 ZIP bulunamadı."
+            echo "ERROR: Stage35 ZIP bulunamadı."
             find . -maxdepth 5 -type f | sort
             exit 1
           fi
 
           echo "Kullanılan ZIP: $ZIP"
-
           rm -rf build_project
           mkdir -p build_project
           unzip -q "$ZIP" -d build_project
 
           PROJECT_FILE=$(find build_project \
             \( -name 'settings.gradle.kts' -o -name 'settings.gradle' \) \
-            -type f \
-            -print -quit)
+            -type f -print -quit)
 
           if [ -z "$PROJECT_FILE" ]; then
             echo "ERROR: ZIP içinde Gradle projesi bulunamadı."
@@ -97,6 +92,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage34-BluetoothServiceProbe-APK
+          name: WanboRemote-Stage35-BluetoothProtocolLogger-APK
           path: ${{ steps.project.outputs.project_dir }}/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
