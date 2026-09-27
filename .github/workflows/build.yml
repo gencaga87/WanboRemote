@@ -1,4 +1,4 @@
-name: Build Wanbo Remote Stage 29 Plus Fine Fix 47
+name: Build Wanbo Remote Stage 30 Back Home Plus Touch Fix 48
 
 on:
   workflow_dispatch:
@@ -18,7 +18,7 @@ jobs:
         run: |
           rm -rf project
           mkdir -p project
-          unzip -q WanboRemote_Stage29_VolumeFocusPlusTouchFineFix47.zip -d project
+          unzip -q WanboRemote_Stage30_BackHomePlusTouchFix48.zip -d project
 
           echo "=== PROJECT ==="
           ls -la project
@@ -75,7 +75,7 @@ jobs:
 
           if [ -z "$APK" ]; then
             echo "ERROR: APK bulunamadı."
-            echo "=== ALL BUILD FILES ==="
+            echo "=== BUILD FILES ==="
             find "$GITHUB_WORKSPACE/project" \
               -type f \
               -path "*/build/*" \
@@ -83,14 +83,12 @@ jobs:
             exit 1
           fi
 
-          echo "================================"
-          echo "APK BULUNDU:"
+          echo "APK bulundu:"
           echo "$APK"
-          echo "================================"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage29-PlusFineFix47-APK
+          name: WanboRemote-Stage30-BackHomePlusTouchFix48-APK
           path: project/**/build/outputs/apk/debug/*.apk
           if-no-files-found: error
