@@ -1,4 +1,4 @@
-name: Build Wanbo Remote Stage 25 Prime Video Deep Link Fix 43
+name: Build Wanbo Remote Stage 26 Volume Focus Touch Fix 44
 
 on:
   workflow_dispatch:
@@ -18,8 +18,7 @@ jobs:
         run: |
           rm -rf project
           mkdir -p project
-
-          unzip -q WanboRemote_Stage25_PrimeVideoDeepLinkFix43.zip -d project
+          unzip -q WanboRemote_Stage26_VolumeFocusTouchFix44.zip -d project
 
           echo "=== PROJECT ==="
           ls -la project
@@ -75,12 +74,11 @@ jobs:
 
           echo "APK bulundu:"
           echo "$APK"
-
           echo "apk_path=$APK" >> "$GITHUB_OUTPUT"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage25-PrimeVideoDeepLinkFix43-APK
+          name: WanboRemote-Stage26-VolumeFocusTouchFix44-APK
           path: ${{ steps.apk.outputs.apk_path }}
           if-no-files-found: error
