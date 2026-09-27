@@ -1,4 +1,4 @@
-name: Build Wanbo Remote Stage 33 Back Home Touch Centered Fix 52
+name: Build Wanbo Remote Stage 34 Input Selection Fix 53
 
 on:
   workflow_dispatch:
@@ -18,9 +18,7 @@ jobs:
         run: |
           rm -rf project
           mkdir -p project
-          unzip -q WanboRemote_Stage33_BackHomeTouchCenteredFix52.zip -d project
-
-          echo "=== PROJECT ==="
+          unzip -q WanboRemote_Stage34_InputSelectionFix53.zip -d project
           ls -la project
 
       - name: Set up Java 17
@@ -43,13 +41,12 @@ jobs:
             | head -n 1)
 
           if [ -z "$SETTINGS" ]; then
-            echo "ERROR: Gradle project bulunamadı."
-            find "$GITHUB_WORKSPACE/project" -maxdepth 6 -type f | sort
+            echo "settings.gradle bulunamadı."
+            find "$GITHUB_WORKSPACE/project" -maxdepth 4 -type f | head -100
             exit 1
           fi
 
           GRADLE_DIR=$(dirname "$SETTINGS")
-
           echo "Gradle project: $GRADLE_DIR"
           echo "gradle_dir=$GRADLE_DIR" >> "$GITHUB_OUTPUT"
 
@@ -61,34 +58,22 @@ jobs:
       - name: Find APK
         shell: bash
         run: |
-          echo "=== APK FILES ==="
+          echo "Oluşturulan APK dosyaları:"
+          find "$GITHUB_WORKSPACE/project" -type f -name "*.apk" -print
 
-          find "$GITHUB_WORKSPACE/project" \
-            -type f \
-            -name "*.apk" \
-            -print
-
-          APK=$(find "$GITHUB_WORKSPACE/project" \
-            -type f \
-            -path "*/build/outputs/apk/debug/*.apk" \
-            | head -n 1)
+          APK=$(find "$GITHUB_WORKSPACE/project" -type f \
+            -path "*/build/outputs/apk/debug/*.apk" | head -n 1)
 
           if [ -z "$APK" ]; then
-            echo "ERROR: APK bulunamadı."
-            echo "=== BUILD FILES ==="
-            find "$GITHUB_WORKSPACE/project" \
-              -type f \
-              -path "*/build/*" \
-              -print
+            echo "APK bulunamadı!"
             exit 1
           fi
 
-          echo "APK bulundu:"
-          echo "$APK"
+          echo "APK bulundu: $APK"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage33-BackHomeTouchCenteredFix52-APK
+          name: WanboRemote-Stage34-InputSelectionFix53-APK
           path: project/**/build/outputs/apk/debug/*.apk
           if-no-files-found: error
