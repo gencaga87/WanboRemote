@@ -37,4 +37,60 @@ jobs:
       - name: Find Gradle project
         id: gradle_project
         shell: bash
-        run:
+        run: |
+          SETTINGS=$(find "$GITHUB_WORKSPACE/project" -type f \
+            \( -name "settings.gradle" -o -name "settings.gradle.kts" \) \
+            | head -n 1)
+
+          if [ -z "$SETTINGS" ]; then
+            echo "ERROR: Gradle project bulunamadı."
+            find "$GITHUB_WORKSPACE/project" -maxdepth 6 -type f | sort
+            exit 1
+          fi
+
+          GRADLE_DIR=$(dirname "$SETTINGS")
+
+          echo "Gradle project: $GRADLE_DIR"
+          echo "gradle_dir=$GRADLE_DIR" >> "$GITHUB_OUTPUT"
+
+      - name: Build APK
+        working-directory: ${{ steps.gradle_project.outputs.gradle_dir }}
+        run: |
+          gradle assembleDebug --stacktrace
+
+      - name: Find APK
+        shell: bash
+        run: |
+          echo "=== APK FILES ==="
+
+          find "$GITHUB_WORKSPACE/project" \
+            -type f \
+            -name "*.apk" \
+            -print
+
+          APK=$(find "$GITHUB_WORKSPACE/project" \
+            -type f \
+            -path "*/build/outputs/apk/debug/*.apk" \
+            | head -n 1)
+
+          if [ -z "$APK" ]; then
+            echo "ERROR: APK bulunamadı."
+            echo "=== ALL BUILD FILES ==="
+            find "$GITHUB_WORKSPACE/project" \
+              -type f \
+              -path "*/build/*" \
+              -print
+            exit 1
+          fi
+
+          echo "================================"
+          echo "APK BULUNDU:"
+          echo "$APK"
+          echo "================================"
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: WanboRemote-Stage29-PlusFineFix47-APK
+          path: project/**/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
