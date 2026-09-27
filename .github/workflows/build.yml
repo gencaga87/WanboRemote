@@ -43,15 +43,14 @@ jobs:
 
           ZIP=""
 
-          if [ -f "WanboRemote_Stage28_ProtocolLogger_Fix2.zip" ]; then
-            ZIP="WanboRemote_Stage28_ProtocolLogger_Fix2.zip"
+          if [ -f "WanboRemote_Stage28_ProtocolLogger_Fix3.zip" ]; then
+            ZIP="WanboRemote_Stage28_ProtocolLogger_Fix3.zip"
           else
             ZIP=$(find . -maxdepth 3 -type f -name 'WanboRemote_*.zip' -print -quit || true)
           fi
 
           if [ -z "$ZIP" ]; then
             echo "ERROR: Gradle projesi bulunamadı."
-            echo "settings.gradle(.kts) yok ve WanboRemote_*.zip bulunamadı."
             find . -maxdepth 5 -type f | sort
             exit 1
           fi
@@ -89,12 +88,10 @@ jobs:
           test -f app/build.gradle.kts -o -f app/build.gradle
 
           echo "Gradle project verified."
-          find . -maxdepth 2 -type f | sort
 
       - name: Build Debug APK
         working-directory: ${{ steps.project.outputs.project_dir }}
-        run: |
-          gradle :app:assembleDebug --no-daemon --stacktrace
+        run: gradle :app:assembleDebug --no-daemon --stacktrace
 
       - name: Check APK
         working-directory: ${{ steps.project.outputs.project_dir }}
@@ -103,12 +100,11 @@ jobs:
 
           test -f app/build/outputs/apk/debug/app-debug.apk
 
-          echo "APK successfully created:"
           ls -lh app/build/outputs/apk/debug/app-debug.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage28-ProtocolLogger-Fix2-APK
+          name: WanboRemote-Stage28-ProtocolLogger-Fix3-APK
           path: ${{ steps.project.outputs.project_dir }}/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
