@@ -1,4 +1,4 @@
-name: Build Wanbo Remote Stage 33 Bluetooth Service Probe
+name: Build Wanbo Remote Stage 33 Bluetooth Service Probe Fix1
 
 on:
   workflow_dispatch:
@@ -39,16 +39,17 @@ jobs:
 
           ZIP=""
 
-          if [ -f "WanboRemote_Stage33_BluetoothServiceProbe.zip" ]; then
-            ZIP="WanboRemote_Stage33_BluetoothServiceProbe.zip"
+          if [ -f "WanboRemote_Stage33_BluetoothServiceProbe_Fix1.zip" ]; then
+            ZIP="WanboRemote_Stage33_BluetoothServiceProbe_Fix1.zip"
           else
             ZIP=$(find . -maxdepth 3 -type f \
-              -name 'WanboRemote_Stage33_*.zip' \
+              -name 'WanboRemote_Stage33_*Fix1.zip' \
               -print -quit || true)
           fi
 
           if [ -z "$ZIP" ]; then
-            echo "ERROR: Stage33 ZIP bulunamadı."
+            echo "ERROR: Stage33 Fix1 ZIP bulunamadı."
+            echo "Repository içeriği:"
             find . -maxdepth 5 -type f | sort
             exit 1
           fi
@@ -85,7 +86,9 @@ jobs:
           test -f settings.gradle.kts -o -f settings.gradle
           test -f app/build.gradle.kts -o -f app/build.gradle
 
-          echo "Gradle projesi OK."
+          echo "Gradle projesi bulundu:"
+          pwd
+          ls -la
 
       - name: Build Debug APK
         working-directory: ${{ steps.project.outputs.project_dir }}
@@ -105,14 +108,18 @@ jobs:
 
           APK="app/build/outputs/apk/debug/app-debug.apk"
 
-          test -f "$APK"
+          if [ ! -f "$APK" ]; then
+            echo "ERROR: APK oluşturulamadı."
+            find app/build -type f -name '*.apk' -print 2>/dev/null || true
+            exit 1
+          fi
 
-          echo "APK oluşturuldu:"
+          echo "APK başarıyla oluşturuldu:"
           ls -lh "$APK"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage33-BluetoothServiceProbe-APK
+          name: WanboRemote-Stage33-BluetoothServiceProbe-Fix1-APK
           path: ${{ steps.project.outputs.project_dir }}/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
