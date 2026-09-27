@@ -1,4 +1,4 @@
-name: Build Wanbo Remote Stage 32 Back Home Touch Wide Fix 51
+name: Build Wanbo Remote Stage 33 Back Home Touch Centered Fix 52
 
 on:
   workflow_dispatch:
@@ -18,7 +18,7 @@ jobs:
         run: |
           rm -rf project
           mkdir -p project
-          unzip -q WanboRemote_Stage32_BackHomeTouchWideFix51.zip -d project
+          unzip -q WanboRemote_Stage33_BackHomeTouchCenteredFix52.zip -d project
 
           echo "=== PROJECT ==="
           ls -la project
@@ -89,6 +89,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage32-BackHomeTouchWideFix51-APK
+          name: WanboRemote-Stage33-BackHomeTouchCenteredFix52-APK
           path: project/**/build/outputs/apk/debug/*.apk
           if-no-files-found: error
