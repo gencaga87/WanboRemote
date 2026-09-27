@@ -1,4 +1,4 @@
-name: Build Wanbo Remote Stage 34 Input Selection Fix 53
+name: Build Wanbo Remote Stage 35 Input Source Menu Fix 54
 
 on:
   workflow_dispatch:
@@ -18,7 +18,7 @@ jobs:
         run: |
           rm -rf project
           mkdir -p project
-          unzip -q WanboRemote_Stage34_InputSelectionFix53.zip -d project
+          unzip -q WanboRemote_Stage35_InputSourceMenuFix54.zip -d project
           ls -la project
 
       - name: Set up Java 17
@@ -41,13 +41,11 @@ jobs:
             | head -n 1)
 
           if [ -z "$SETTINGS" ]; then
-            echo "settings.gradle bulunamadı."
-            find "$GITHUB_WORKSPACE/project" -maxdepth 4 -type f | head -100
+            echo "settings.gradle bulunamadı!"
             exit 1
           fi
 
           GRADLE_DIR=$(dirname "$SETTINGS")
-          echo "Gradle project: $GRADLE_DIR"
           echo "gradle_dir=$GRADLE_DIR" >> "$GITHUB_OUTPUT"
 
       - name: Build APK
@@ -56,24 +54,13 @@ jobs:
           gradle assembleDebug --stacktrace
 
       - name: Find APK
-        shell: bash
         run: |
-          echo "Oluşturulan APK dosyaları:"
-          find "$GITHUB_WORKSPACE/project" -type f -name "*.apk" -print
-
-          APK=$(find "$GITHUB_WORKSPACE/project" -type f \
-            -path "*/build/outputs/apk/debug/*.apk" | head -n 1)
-
-          if [ -z "$APK" ]; then
-            echo "APK bulunamadı!"
-            exit 1
-          fi
-
-          echo "APK bulundu: $APK"
+          find "$GITHUB_WORKSPACE/project" \
+            -type f -path "*/build/outputs/apk/debug/*.apk" -print
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage34-InputSelectionFix53-APK
+          name: WanboRemote-Stage35-InputSourceMenuFix54-APK
           path: project/**/build/outputs/apk/debug/*.apk
           if-no-files-found: error
