@@ -1,4 +1,4 @@
-name: Build Wanbo Remote Stage 27 Exact Touch Fix 45
+name: Build Wanbo Remote Stage 28 Plus Touch Fix 46
 
 on:
   workflow_dispatch:
@@ -18,7 +18,7 @@ jobs:
         run: |
           rm -rf project
           mkdir -p project
-          unzip -q WanboRemote_Stage27_VolumeFocusExactTouchFix45.zip -d project
+          unzip -q WanboRemote_Stage28_VolumeFocusPlusTouchFix46.zip -d project
 
           echo "=== PROJECT ==="
           ls -la project
@@ -79,6 +79,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage27-ExactTouchFix45-APK
+          name: WanboRemote-Stage28-PlusTouchFix46-APK
           path: ${{ steps.apk.outputs.apk_path }}
           if-no-files-found: error
