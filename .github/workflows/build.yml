@@ -1,4 +1,4 @@
-name: Build Wanbo Remote Stage 36 HDMI2 Direct Fix 55
+name: Build Wanbo Remote Stage 27 Exact Touch Fix 45
 
 on:
   workflow_dispatch:
@@ -18,7 +18,9 @@ jobs:
         run: |
           rm -rf project
           mkdir -p project
-          unzip -q WanboRemote_Stage36_HDMI2DirectFix55.zip -d project
+          unzip -q WanboRemote_Stage27_VolumeFocusExactTouchFix45.zip -d project
+
+          echo "=== PROJECT ==="
           ls -la project
 
       - name: Set up Java 17
@@ -36,16 +38,19 @@ jobs:
         id: gradle_project
         shell: bash
         run: |
-          SETTINGS=$(find "$GITHUB_WORKSPACE/project" -type f \
+          SETTINGS=$(find project -type f \
             \( -name "settings.gradle" -o -name "settings.gradle.kts" \) \
             | head -n 1)
 
           if [ -z "$SETTINGS" ]; then
-            echo "settings.gradle bulunamadı!"
+            echo "ERROR: Gradle project bulunamadı."
+            find project -maxdepth 6 -type f | sort
             exit 1
           fi
 
           GRADLE_DIR=$(dirname "$SETTINGS")
+
+          echo "Gradle project: $GRADLE_DIR"
           echo "gradle_dir=$GRADLE_DIR" >> "$GITHUB_OUTPUT"
 
       - name: Build APK
@@ -54,17 +59,26 @@ jobs:
           gradle assembleDebug --stacktrace
 
       - name: Find APK
+        id: apk
         shell: bash
         run: |
-          echo "APK:"
-          find "$GITHUB_WORKSPACE/project" \
-            -type f \
+          APK=$(find project -type f \
             -path "*/build/outputs/apk/debug/*.apk" \
-            -print
+            | head -n 1)
+
+          if [ -z "$APK" ]; then
+            echo "ERROR: APK bulunamadı."
+            find project -type f | sort
+            exit 1
+          fi
+
+          echo "APK bulundu:"
+          echo "$APK"
+          echo "apk_path=$APK" >> "$GITHUB_OUTPUT"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage36-HDMI2DirectFix55-APK
-          path: project/**/build/outputs/apk/debug/*.apk
+          name: WanboRemote-Stage27-ExactTouchFix45-APK
+          path: ${{ steps.apk.outputs.apk_path }}
           if-no-files-found: error
