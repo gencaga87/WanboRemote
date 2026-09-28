@@ -1,4 +1,4 @@
-name: Build Wanbo Remote Stage 38
+name: Build Wanbo Remote Stage 38 FIX
 
 on:
   workflow_dispatch:
@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -32,71 +33,196 @@ jobs:
         run: |
           set -e
 
+          echo "========================================"
+          echo " Stage 38 FIX"
+          echo " D1221 APK / Service Discovery"
+          echo "========================================"
+
           if [ -f "settings.gradle.kts" ] || [ -f "settings.gradle" ]; then
+            echo "Root dizinde Gradle projesi bulundu."
             echo "project_dir=." >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
           ZIP=""
 
-          if [ -f "WanboRemote_Stage38_D1221_AppServiceDiscovery.zip" ]; then
-            ZIP="WanboRemote_Stage38_D1221_AppServiceDiscovery.zip"
+          if [ -f "WanboRemote_Stage38_D1221_AppServiceDiscovery_FIXED.zip" ]; then
+            ZIP="WanboRemote_Stage38_D1221_AppServiceDiscovery_FIXED.zip"
           else
-            ZIP=$(find . -maxdepth 3 -type f -name 'WanboRemote_Stage38_*.zip' -print -quit || true)
+            ZIP=$(find . -maxdepth 3 -type f \
+              -name 'WanboRemote_Stage38_*FIXED*.zip' \
+              -print -quit || true)
           fi
 
           if [ -z "$ZIP" ]; then
-            echo "ERROR: Stage38 ZIP bulunamadı."
+            echo ""
+            echo "ERROR: Stage 38 FIX ZIP bulunamadı."
+            echo ""
+            echo "Repository içeriği:"
             find . -maxdepth 5 -type f | sort
             exit 1
           fi
 
+          echo ""
+          echo "ZIP bulundu:"
+          echo "$ZIP"
+          echo ""
+
           rm -rf build_project
           mkdir -p build_project
+
+          echo "ZIP açılıyor..."
           unzip -q "$ZIP" -d build_project
+
+          echo ""
+          echo "Gradle proje dosyası aranıyor..."
 
           PROJECT_FILE=$(find build_project \
             \( -name 'settings.gradle.kts' -o -name 'settings.gradle' \) \
-            -type f -print -quit)
+            -type f \
+            -print -quit)
 
           if [ -z "$PROJECT_FILE" ]; then
+            echo ""
             echo "ERROR: ZIP içinde Gradle projesi bulunamadı."
+            echo ""
+            echo "ZIP içeriği:"
             find build_project -maxdepth 8 -type f | sort
             exit 1
           fi
 
           PROJECT_DIR=$(dirname "$PROJECT_FILE")
+
+          echo ""
+          echo "Gradle proje dizini:"
+          echo "$PROJECT_DIR"
+
           echo "project_dir=$PROJECT_DIR" >> "$GITHUB_OUTPUT"
 
       - name: Verify Gradle project
         working-directory: ${{ steps.project.outputs.project_dir }}
+        shell: bash
         run: |
           set -e
 
-          test -f settings.gradle.kts -o -f settings.gradle
-          test -f app/build.gradle.kts -o -f app/build.gradle
+          echo "========================================"
+          echo " Gradle proje kontrolü"
+          echo "========================================"
 
-          echo "Gradle projesi OK."
+          if [ -f "settings.gradle.kts" ]; then
+            echo "settings.gradle.kts bulundu."
+          elif [ -f "settings.gradle" ]; then
+            echo "settings.gradle bulundu."
+          else
+            echo "ERROR: settings.gradle dosyası yok."
+            exit 1
+          fi
+
+          if [ -f "app/build.gradle.kts" ]; then
+            echo "app/build.gradle.kts bulundu."
+          elif [ -f "app/build.gradle" ]; then
+            echo "app/build.gradle bulundu."
+          else
+            echo "ERROR: app/build.gradle dosyası yok."
+            exit 1
+          fi
+
+          echo ""
+          echo "Proje yapısı OK."
+
+          echo ""
+          echo "Java:"
+          java -version
+
+          echo ""
+          echo "Gradle:"
+          gradle --version
+
+      - name: Clean previous build
+        working-directory: ${{ steps.project.outputs.project_dir }}
+        shell: bash
+        run: |
+          set -e
+
+          echo "Eski build temizleniyor..."
+
+          gradle :app:clean \
+            --no-daemon \
+            --stacktrace
 
       - name: Build Debug APK
         working-directory: ${{ steps.project.outputs.project_dir }}
+        shell: bash
         run: |
           set -e
 
-          gradle :app:assembleDebug --no-daemon --stacktrace
+          echo "========================================"
+          echo " Stage 38 FIX APK BUILD"
+          echo "========================================"
+
+          gradle :app:assembleDebug \
+            --no-daemon \
+            --stacktrace
 
       - name: Check APK
         working-directory: ${{ steps.project.outputs.project_dir }}
+        shell: bash
         run: |
           set -e
 
-          test -f app/build/outputs/apk/debug/app-debug.apk
+          APK="app/build/outputs/apk/debug/app-debug.apk"
 
-          ls -lh app/build/outputs/apk/debug/app-debug.apk
+          echo "========================================"
+          echo " APK kontrolü"
+          echo "========================================"
+
+          if [ ! -f "$APK" ]; then
+            echo ""
+            echo "ERROR: APK oluşturulamadı."
+            echo ""
+            echo "APK klasörü:"
+            find app/build/outputs -maxdepth 5 -type f 2>/dev/null | sort || true
+            exit 1
+          fi
+
+          echo ""
+          echo "APK BAŞARIYLA OLUŞTU:"
+          echo "$APK"
+
+          echo ""
+          echo "Dosya boyutu:"
+          ls -lh "$APK"
+
+      - name: Show APK SHA256
+        working-directory: ${{ steps.project.outputs.project_dir }}
+        shell: bash
+        run: |
+          set -e
+
+          APK="app/build/outputs/apk/debug/app-debug.apk"
+
+          echo "APK SHA256:"
+          sha256sum "$APK"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage38-D1221-AppServiceDiscovery-APK
+          name: WanboRemote-Stage38-D1221-AppServiceDiscovery-FIX
           path: ${{ steps.project.outputs.project_dir }}/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
+          retention-days: 30
+
+      - name: Build summary
+        if: success()
+        shell: bash
+        run: |
+          echo "========================================"
+          echo " STAGE 38 BUILD BAŞARILI"
+          echo "========================================"
+          echo ""
+          echo "APK artifact:"
+          echo "WanboRemote-Stage38-D1221-AppServiceDiscovery-FIX"
+          echo ""
+          echo "Sonraki adım:"
+          echo "APK'yı telefona kur ve D1221 APK/SERVİS"
+          echo "keşif taramasını çalıştır."
