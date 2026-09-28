@@ -1,4 +1,4 @@
-name: Build Wanbo Remote Stage 36 Bluetooth Handshake Logger
+name: Build Wanbo Remote Stage 37 Native Protocol Fingerprint
 
 on:
   workflow_dispatch:
@@ -39,16 +39,16 @@ jobs:
 
           ZIP=""
 
-          if [ -f "WanboRemote_Stage36_BluetoothHandshakeLogger.zip" ]; then
-            ZIP="WanboRemote_Stage36_BluetoothHandshakeLogger.zip"
+          if [ -f "WanboRemote_Stage37_NativeProtocolFingerprint.zip" ]; then
+            ZIP="WanboRemote_Stage37_NativeProtocolFingerprint.zip"
           else
             ZIP=$(find . -maxdepth 3 -type f \
-              -name 'WanboRemote_Stage36_*.zip' \
+              -name 'WanboRemote_Stage37_*.zip' \
               -print -quit || true)
           fi
 
           if [ -z "$ZIP" ]; then
-            echo "ERROR: Stage36 ZIP bulunamadı."
+            echo "ERROR: Stage37 ZIP bulunamadı."
             echo "Repository içeriği:"
             find . -maxdepth 5 -type f | sort
             exit 1
@@ -135,6 +135,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage36-BluetoothHandshakeLogger-APK
+          name: WanboRemote-Stage37-NativeProtocolFingerprint-APK
           path: ${{ steps.project.outputs.project_dir }}/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
