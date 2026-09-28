@@ -1,4 +1,4 @@
-name: Build Wanbo Remote Stage 37 Native Protocol Fingerprint
+name: Build Wanbo Remote Stage 38
 
 on:
   workflow_dispatch:
@@ -39,102 +39,64 @@ jobs:
 
           ZIP=""
 
-          if [ -f "WanboRemote_Stage37_NativeProtocolFingerprint.zip" ]; then
-            ZIP="WanboRemote_Stage37_NativeProtocolFingerprint.zip"
+          if [ -f "WanboRemote_Stage38_D1221_AppServiceDiscovery.zip" ]; then
+            ZIP="WanboRemote_Stage38_D1221_AppServiceDiscovery.zip"
           else
-            ZIP=$(find . -maxdepth 3 -type f \
-              -name 'WanboRemote_Stage37_*.zip' \
-              -print -quit || true)
+            ZIP=$(find . -maxdepth 3 -type f -name 'WanboRemote_Stage38_*.zip' -print -quit || true)
           fi
 
           if [ -z "$ZIP" ]; then
-            echo "ERROR: Stage37 ZIP bulunamadı."
-            echo "Repository içeriği:"
+            echo "ERROR: Stage38 ZIP bulunamadı."
             find . -maxdepth 5 -type f | sort
             exit 1
           fi
 
-          echo "Kullanılan ZIP: $ZIP"
-
           rm -rf build_project
           mkdir -p build_project
-
           unzip -q "$ZIP" -d build_project
 
           PROJECT_FILE=$(find build_project \
             \( -name 'settings.gradle.kts' -o -name 'settings.gradle' \) \
-            -type f \
-            -print -quit)
+            -type f -print -quit)
 
           if [ -z "$PROJECT_FILE" ]; then
             echo "ERROR: ZIP içinde Gradle projesi bulunamadı."
-            echo "ZIP içeriği:"
             find build_project -maxdepth 8 -type f | sort
             exit 1
           fi
 
           PROJECT_DIR=$(dirname "$PROJECT_FILE")
-
-          echo "Gradle proje dizini: $PROJECT_DIR"
           echo "project_dir=$PROJECT_DIR" >> "$GITHUB_OUTPUT"
 
       - name: Verify Gradle project
         working-directory: ${{ steps.project.outputs.project_dir }}
-        shell: bash
         run: |
           set -e
 
-          if [ -f "settings.gradle.kts" ]; then
-            echo "settings.gradle.kts bulundu."
-          elif [ -f "settings.gradle" ]; then
-            echo "settings.gradle bulundu."
-          else
-            echo "ERROR: settings.gradle bulunamadı."
-            exit 1
-          fi
-
-          if [ -f "app/build.gradle.kts" ]; then
-            echo "app/build.gradle.kts bulundu."
-          elif [ -f "app/build.gradle" ]; then
-            echo "app/build.gradle bulundu."
-          else
-            echo "ERROR: app Gradle dosyası bulunamadı."
-            find . -maxdepth 5 -type f | sort
-            exit 1
-          fi
+          test -f settings.gradle.kts -o -f settings.gradle
+          test -f app/build.gradle.kts -o -f app/build.gradle
 
           echo "Gradle projesi OK."
 
       - name: Build Debug APK
         working-directory: ${{ steps.project.outputs.project_dir }}
-        shell: bash
         run: |
           set -e
 
-          gradle :app:assembleDebug \
-            --no-daemon \
-            --stacktrace
+          gradle :app:assembleDebug --no-daemon --stacktrace
 
       - name: Check APK
         working-directory: ${{ steps.project.outputs.project_dir }}
-        shell: bash
         run: |
           set -e
 
-          APK="app/build/outputs/apk/debug/app-debug.apk"
+          test -f app/build/outputs/apk/debug/app-debug.apk
 
-          if [ ! -f "$APK" ]; then
-            echo "ERROR: APK oluşturulamadı."
-            find app/build -type f | sort || true
-            exit 1
-          fi
-
-          echo "APK bulundu:"
-          ls -lh "$APK"
+          ls -lh app/build/outputs/apk/debug/app-debug.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: WanboRemote-Stage37-NativeProtocolFingerprint-APK
+          name: WanboRemote-Stage38-D1221-AppServiceDiscovery-APK
           path: ${{ steps.project.outputs.project_dir }}/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
